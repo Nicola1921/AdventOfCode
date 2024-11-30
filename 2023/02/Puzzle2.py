@@ -75,6 +75,31 @@ def sum_possible_games(filename):
         return sum
 
 
+def min_cubes(game: Game) -> Round:
+    min_val = Round(0, 0, 0)
+
+    for round in game.rounds:
+        if round.red > min_val.red:
+            min_val.red = round.red
+        if round.green > min_val.green:
+            min_val.green = round.green
+        if round.blue > min_val.blue:
+            min_val.blue = round.blue
+
+    return min_val
+
+
+def sum_power_min_cubes(filename: str) -> int:
+    with open(filename, "r") as file:
+        sum = 0
+        for line in file:
+            game = map_to_game(line)
+            min_val = min_cubes(game)
+            sum += min_val.red * min_val.blue * min_val.green
+
+        return sum
+
+
 class Test(unittest.TestCase):
     def test_game_is_valid(self):
 
@@ -110,6 +135,16 @@ class Test(unittest.TestCase):
             )
         )
 
+    def test_min_cubes(self):
+        self.assertEqual(
+            min_cubes(
+                map_to_game(
+                    "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",
+                    Round(4, 2, 6),
+                )
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main(exit=False)
@@ -118,3 +153,4 @@ if __name__ == "__main__":
         os.path.dirname(os.path.abspath(__file__)), "data.txt"
     )
     print(f"Result: {sum_possible_games(input_file_path)}")
+    print(f"Result: {sum_power_min_cubes(input_file_path)}")
