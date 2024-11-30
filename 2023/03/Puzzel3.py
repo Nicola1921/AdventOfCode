@@ -1,7 +1,5 @@
 import os
-import re
 import unittest
-
 from functools import reduce
 
 adj_matrix = [
