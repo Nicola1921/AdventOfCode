@@ -2,8 +2,10 @@ import os
 import re
 import unittest
 
+import numpy as np
 
-def solve(input_file_path: str) -> int:
+
+def solve(input_file_path: str) -> tuple[int]:
     left_list = []
     right_list = []
 
@@ -18,7 +20,13 @@ def solve(input_file_path: str) -> int:
 
     distance_list = list(map(lambda x, y: abs(x - y), left_list, right_list))
 
-    return sum(distance_list)
+    right_as_np_array = np.array(right_list)
+    similarity_score = []
+    for entry in left_list:
+        occurences = np.where(right_as_np_array == entry)[0].size
+        similarity_score.append(entry * occurences)
+
+    return sum(distance_list), sum(similarity_score)
 
 
 class Test(unittest.TestCase):
@@ -27,7 +35,7 @@ class Test(unittest.TestCase):
             os.path.dirname(os.path.abspath(__file__)), "testData.txt"
         )
 
-        self.assertEqual(solve(input_file_path), 11)
+        self.assertEqual(solve(input_file_path), (11, 31))
 
 
 if __name__ == "__main__":
