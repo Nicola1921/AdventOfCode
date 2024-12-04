@@ -71,6 +71,32 @@ def solve_part1(input_file_path: str) -> int:
     return sum_xmas
 
 
+def solve_part2(input_file_path: str) -> int:
+    sum_xmas = 0
+    word_search_array = create_word_search_array(input_file_path)
+    for row, str in enumerate(word_search_array):
+        for col, char in enumerate(str):
+            if char != "A":
+                continue
+
+            if not is_within_bounds(row - 1, col - 1) or not is_within_bounds(
+                row + 1, col + 1
+            ):
+                continue
+
+            x_TL = word_search_array[row - 1][col - 1]
+            x_TR = word_search_array[row - 1][col + 1]
+            x_BL = word_search_array[row + 1][col - 1]
+            x_BR = word_search_array[row + 1][col + 1]
+
+            if (x_TL == "M" and x_BR == "S" or x_TL == "S" and x_BR == "M") and (
+                x_TR == "M" and x_BL == "S" or x_TR == "S" and x_BL == "M"
+            ):
+                sum_xmas += 1
+
+    return sum_xmas
+
+
 class Test(unittest.TestCase):
     def test_solve(self):
         input_file_path = os.path.join(
@@ -78,6 +104,7 @@ class Test(unittest.TestCase):
         )
 
         self.assertEqual(solve_part1(input_file_path), 18)
+        self.assertEqual(solve_part2(input_file_path), 9)
 
 
 if __name__ == "__main__":
@@ -87,3 +114,4 @@ if __name__ == "__main__":
         os.path.dirname(os.path.abspath(__file__)), "data.txt"
     )
     print(f"Result Part1: {solve_part1(input_file_path)}")
+    print(f"Result Part2: {solve_part2(input_file_path)}")
