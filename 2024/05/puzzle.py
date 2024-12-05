@@ -1,6 +1,7 @@
 import math
 import os
 import unittest
+from functools import cmp_to_key
 
 
 def solve(input_file_path: str) -> int:
@@ -26,6 +27,7 @@ def solve(input_file_path: str) -> int:
                 updates.append(line.split(","))
 
     sum = 0
+    invalid_sum = 0
     for update in updates:
         for idx, num in enumerate(update):
             numbers_not_allowed_before = rules.get(num, [])
@@ -36,10 +38,33 @@ def solve(input_file_path: str) -> int:
                 continue
             break
         else:
-            m_idx = math.ceil(len(update) / 2)
-            sum += int(update[m_idx - 1])
+            sum += get_middle_num(update)
+            continue
 
-    return sum
+        update = sorted(update, key=cmp_to_key(lambda x, y: compare(x, y, rules)))
+        invalid_sum += get_middle_num(update)
+
+    return sum, invalid_sum
+
+
+def get_middle_num(update: list) -> int:
+    m_idx = math.ceil(len(update) / 2)
+    return int(update[m_idx - 1])
+
+
+def compare(x: str, y: str, rules: dict) -> int:
+    if y in list(rules.get(x, [])):
+        return -1
+
+    return 1
+
+
+def list_find(search, array):
+    for i, val in enumerate(array):
+        if val == search:
+            return i
+
+    return -1
 
 
 class Test(unittest.TestCase):
@@ -48,7 +73,7 @@ class Test(unittest.TestCase):
             os.path.dirname(os.path.abspath(__file__)), "testData.txt"
         )
 
-        self.assertEqual(solve(input_file_path), 143)
+        self.assertEqual(solve(input_file_path), (143, 123))
 
 
 if __name__ == "__main__":
