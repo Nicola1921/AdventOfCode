@@ -1,5 +1,7 @@
+import math
 import os
 import re
+import time
 import unittest
 from enum import Enum
 from itertools import product
@@ -32,8 +34,8 @@ def calculate(equation_values: list[int], operators: list[chr]):
         if operators[idx] == Operator.MUL.value:
             sum *= equation_values[idx + 1]
         if operators[idx] == Operator.CONCAT.value:
-            sum = int(str(sum) + str(equation_values[idx + 1]))
-
+            num = equation_values[idx + 1]
+            sum = sum * pow(10, math.floor(math.log10(num) + 1)) + num
     return sum
 
 
@@ -93,9 +95,14 @@ if __name__ == "__main__":
     input_file_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "data.txt"
     )
+    start_Time = time.time()
     print(
         f"Result Part1: {solve(input_file_path, [Operator.SUM.value, Operator.MUL.value])}"
     )
+    print(f"Duration: {round(time.time() - start_Time, 4)} s")
+
+    start_Time = time.time()
     print(
         f"Result Part2: {solve(input_file_path, [Operator.SUM.value, Operator.MUL.value, Operator.CONCAT.value])}"
     )
+    print(f"Duration: {round(time.time() - start_Time, 4)} s")
