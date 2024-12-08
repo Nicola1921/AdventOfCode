@@ -38,7 +38,7 @@ def locate_antennas(input_file_path: str) -> dict:
     return antennas
 
 
-def solve(input_file_path: str) -> int:
+def solve(input_file_path: str, is_part2: bool = False) -> int:
     antinodes = set()
     antennas = locate_antennas(input_file_path)
     for antenna in antennas:
@@ -51,13 +51,25 @@ def solve(input_file_path: str) -> int:
             p1 = c[1]
             delta = (p1[0] - p0[0], p1[1] - p0[1])
 
+            if is_part2:
+                antinodes.add(p0)
+                antinodes.add(p1)
+
             antinodeA = (p1[0] + delta[0], p1[1] + delta[1])
             antinodeB = (p0[0] - delta[0], p0[1] - delta[1])
 
-            if is_within_bounds(antinodeA):
+            while is_within_bounds(antinodeA):
                 antinodes.add(antinodeA)
-            if is_within_bounds(antinodeB):
+                if not is_part2:
+                    break
+                antinodeA = (antinodeA[0] + delta[0], antinodeA[1] + delta[1])
+
+            while is_within_bounds(antinodeB):
                 antinodes.add(antinodeB)
+                if not is_part2:
+                    break
+
+                antinodeB = (antinodeB[0] - delta[0], antinodeB[1] - delta[1])
 
     return len(antinodes)
 
@@ -69,6 +81,7 @@ class Test(unittest.TestCase):
         )
 
         self.assertEqual(solve(input_file_path), 14)
+        self.assertEqual(solve(input_file_path, True), 34)
 
 
 if __name__ == "__main__":
@@ -77,4 +90,5 @@ if __name__ == "__main__":
     input_file_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "data.txt"
     )
-    print(f"Result: {solve(input_file_path)}")
+    print(f"Result Part1: {solve(input_file_path)}")
+    print(f"Result Part2: {solve(input_file_path, True)}")
