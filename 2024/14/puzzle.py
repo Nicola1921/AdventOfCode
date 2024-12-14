@@ -24,19 +24,13 @@ def simulate_robot(robot, cycles) -> tuple:
     new_x = sum_x % map_width
     new_y = sum_y % map_height
 
-    if new_x < 0:
-        new_x = map_width - new_x
-
-    if new_y < 0:
-        new_y = map_height - new_y
-
     return (new_x, new_y)
 
 
 def solve(input_file_path: str) -> int:
     robots = map_robots(input_file_path)
 
-    positions = list(map(lambda robot: simulate_robot(robot, 100), robots))
+    positions = list(map(lambda robot: simulate_robot(robot, SIMULATION_TIME), robots))
 
     split_width = map_width / 2
     split_height = map_height / 2
