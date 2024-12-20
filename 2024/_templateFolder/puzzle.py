@@ -23,7 +23,3 @@ if __name__ == "__main__":
     start_time = time.time()
     print(f"Result: {solve(data)}")
     print(f"Duration: {round(time.time() - start_time, 2)} s", end="\n\n")
-    print("-" * 10 + "PART 2" + "-" * 10)
-    start_time = time.time()
-    print(f"Result: {solve(data)}")
-    print(f"Duration: {round(time.time() - start_time, 2)} s", end="\n\n")
