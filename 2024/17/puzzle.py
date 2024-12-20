@@ -1,4 +1,3 @@
-import math
 import os
 import re
 import time
@@ -33,105 +32,28 @@ def get_combo_operand(operand):
             raise ValueError("7 is not a valid operand")
 
 
-# Opcode 0
-def adv(operand: int) -> None:
-    global register_a
-
-    numerator = register_a
-    denominator = math.pow(2, get_combo_operand(operand))
-
-    register_a = int(numerator / denominator)
-
-
-# Opcode 1
-def bxl(operand: int) -> None:
-    global register_b
-
-    register_b = register_b ^ operand
-
-
-# Opcode 2
-def bst(operand: int) -> None:
-    global register_b
-
-    combo_operand = get_combo_operand(operand)
-    register_b = combo_operand % 8
-
-
-# Opcode 3
-def jnz(operand: int) -> None:
-    global register_a, pointer
-
-    if register_a == 0:
-        pointer = float("inf")
-        return
-
-    pointer = operand
-
-
-# Opcode 4
-def bxc() -> None:
-    global register_b, register_c
-
-    register_b = register_b ^ register_c
-
-
-# Opcode 5
-def out(operand: int) -> None:
-    global output
-
-    combo_operand = get_combo_operand(operand)
-    value = combo_operand % 8
-    output.append(str(value))
-
-
-# Opcode 6
-def bdv(operand: int) -> None:
-    global register_a, register_b
-
-    numerator = register_a
-    denominator = math.pow(2, get_combo_operand(operand))
-
-    register_b = int(numerator / denominator)
-
-
-# Opcode 7
-def cdv(operand: int) -> None:
-    global register_a, register_c
-
-    numerator = register_a
-    denominator = math.pow(2, get_combo_operand(operand))
-
-    register_c = int(numerator / denominator)
-
-
 def run_instruction(opcode: int, operand: int):
-    global pointer
+    global register_a, register_b, register_c, pointer
 
     match opcode:
         case 0:
-            adv(operand)
-            pointer += 2
+            register_a = register_a >> get_combo_operand(operand)
         case 1:
-            bxl(operand)
-            pointer += 2
+            register_b = register_b ^ operand
         case 2:
-            bst(operand)
-            pointer += 2
+            register_b = get_combo_operand(operand) % 8  # or &7 for bitwise AND
         case 3:
-            jnz(operand)
+            pointer = operand - 2 if register_a != 0 else float("inf")
         case 4:
-            bxc()
-            pointer += 2
+            register_b = register_b ^ register_c
         case 5:
-            out(operand)
-            pointer += 2
+            output.append(str(get_combo_operand(operand) & 7))  # or %8
         case 6:
-            bdv(operand)
-            pointer += 2
+            register_b = register_a >> get_combo_operand(operand)
         case 7:
-            cdv(operand)
-            pointer += 2
+            register_c = register_a >> get_combo_operand(operand)
+
+    pointer += 2
 
 
 def solve() -> int:
