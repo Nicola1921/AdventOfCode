@@ -1,6 +1,6 @@
 import os
-from functools import lru_cache
 import time
+from functools import lru_cache
 
 input_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.txt")
 towels = []
