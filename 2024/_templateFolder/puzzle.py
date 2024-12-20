@@ -1,28 +1,29 @@
 import os
-import unittest
+import time
+
+input_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.txt")
 
 
-def solve(input_file_path: str) -> int:
+def parse_file() -> list:
     with open(input_file_path, "r") as file:
-        for line in file:
-            print(line)
+        data = file.read().splitlines()
+
+    return data
+
+
+def solve(data: list) -> int:
 
     return 0
 
 
-class Test(unittest.TestCase):
-    def test_solve(self):
-        input_file_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "testData.txt"
-        )
-
-        self.assertEqual(solve(input_file_path), 0)
-
-
 if __name__ == "__main__":
-    unittest.main(exit=False)
+    data = parse_file()
 
-    input_file_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "data.txt"
-    )
-    print(f"Result: {solve(input_file_path)}")
+    print("-" * 10 + "PART 1" + "-" * 10)
+    start_time = time.time()
+    print(f"Result: {solve(data)}")
+    print(f"Duration: {round(time.time() - start_time, 2)} s", end="\n\n")
+    print("-" * 10 + "PART 2" + "-" * 10)
+    start_time = time.time()
+    print(f"Result: {solve(data)}")
+    print(f"Duration: {round(time.time() - start_time, 2)} s", end="\n\n")
