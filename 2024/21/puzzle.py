@@ -1,5 +1,6 @@
 import os
 import time
+from functools import lru_cache
 
 input_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.txt")
 
@@ -55,6 +56,7 @@ def get_numpad_pos(char: str) -> tuple:
             return (3, 2)
 
 
+@lru_cache(100)
 def write_path(current_pos: tuple, pos: tuple, forbiden_pos: tuple) -> list:
 
     dx = pos[0] - current_pos[0]
@@ -77,69 +79,57 @@ def write_path(current_pos: tuple, pos: tuple, forbiden_pos: tuple) -> list:
     return [moves_row + moves_col + "A", moves_col + moves_row + "A"]
 
 
+@lru_cache(100)
 def keypad_inputs(input: list, depth: int) -> list:
     cx, cy = (0, 2)
-    result = ""
+    result = 0
 
     if depth == 0:
-        return input
+        return len(input)
 
     for move in input:
         x, y = get_keypad_pos(move)
         paths = write_path((cx, cy), (x, y), (0, 0))
         cx, cy = x, y
 
-        res = [keypad_inputs(p, depth - 1) for p in paths]
-
-        r_min = 0
-        for idx, r in enumerate(res):
-            if len(r) < len(res[r_min]):
-                r_min = idx
-
-        result += res[r_min]
+        result += min([keypad_inputs(p, depth - 1) for p in paths])
 
     return result
 
 
 def numpad_inputs(input: list, depth: int = 1) -> list:
     cx, cy = (3, 2)
-    result = ""
+    result = 0
 
     for move in input:
         x, y = get_numpad_pos(move)
         paths = write_path((cx, cy), (x, y), (3, 0))
         cx, cy = x, y
 
-        res = [keypad_inputs(p, depth - 1) for p in paths]
-
-        r_min = 0
-        for idx, r in enumerate(res):
-            if len(r) < len(res[r_min]):
-                r_min = idx
-
-        result += res[r_min]
+        result += min([keypad_inputs(p, depth) for p in paths])
 
     return result
 
 
-def solve() -> int:
-    sum = []
-    sum_c = 0
+def solve(num_robots: int) -> int:
+    sum = 0
     data = parse_file()
 
     for d in data:
-        res = numpad_inputs(d, 3)
-        print(res)
-        sum.append(((len(res)), extract_num(d)))
-        sum_c += len(res) * extract_num(d)
+        res = numpad_inputs(d, num_robots)
+        sum += res * extract_num(d)
 
-    print(sum)
-    return sum_c
+    return sum
 
 
 if __name__ == "__main__":
 
     print("-" * 10 + "PART 1" + "-" * 10)
     start_time = time.time()
-    print(f"Result: {solve()}")
-    print(f"Duration: {round(time.time() - start_time, 2)} s", end="\n\n")
+    print(f"Result: {solve(2)}")
+    print(f"Duration: {round(time.time() - start_time, 4)} s", end="\n\n")
+
+    print("-" * 10 + "PART 2" + "-" * 10)
+    start_time = time.time()
+    print(f"Result: {solve(25)}")
+    print(f"Duration: {round(time.time() - start_time, 4)} s", end="\n\n")
