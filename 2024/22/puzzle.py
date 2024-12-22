@@ -1,5 +1,7 @@
 import os
 import time
+from collections import defaultdict
+from itertools import pairwise
 
 import numpy as np
 
@@ -25,19 +27,38 @@ def calculate_next_secret(number: int) -> int:
 def solve(depth: int) -> int:
     initial_numbers = np.loadtxt(input_file_path, dtype=int)
 
-    secrets = []
+    sum = 0
     for num in initial_numbers:
-        temp = num
-        for _ in range(depth):
-            temp = calculate_next_secret(temp)
+        sum += [num := calculate_next_secret(num) for _ in range(depth)][-1]
 
-        secrets.append(temp)
+    return sum
 
-    return sum(secrets)
+
+def solve2(depth: int) -> int:
+    initial_numbers = np.loadtxt(input_file_path, dtype=int).tolist()
+
+    all_seq = defaultdict(int)
+    for num in initial_numbers:
+        seen = set()
+        secrets = [num := calculate_next_secret(num) for _ in range(depth)]
+        pr = [secret % 10 for secret in secrets]
+        diffs = [b - a for a, b in pairwise(pr)]
+
+        for idx in range(4, len(pr)):
+            seq = "".join(str(num) for num in diffs[idx - 4 : idx])
+            if seq not in seen:
+                seen.add(seq)
+                all_seq[seq] = all_seq.get(seq, 0) + pr[idx]
+
+    return max(all_seq.values())
 
 
 if __name__ == "__main__":
     print("-" * 10 + "PART 1" + "-" * 10)
     start_time = time.time()
     print(f"Result: {solve(2000)}")
+    print(f"Duration: {round(time.time() - start_time, 2)} s", end="\n\n")
+    print("-" * 10 + "PART 2" + "-" * 10)
+    start_time = time.time()
+    print(f"Result: {solve2(2000)}")
     print(f"Duration: {round(time.time() - start_time, 2)} s", end="\n\n")
